@@ -14,6 +14,13 @@ void insert(Node * queue, Hnode * huffnode) {
 		insert(queue->next, huffnode);
 }
 
+void print_tree(Hnode * root, int indent) {
+	if (!root)
+		return;
+	cout << root << 
+}
+
+
 int main(int argc, char * argv[]) {
 	ifstream readFile;
 	readFile.open(argv[1]);
@@ -31,14 +38,20 @@ int main(int argc, char * argv[]) {
 	
 	Node * queue = NULL;
 	
-	for (i=0; i<256; i++) 
+	for (int i=0; i<256; i++) 
 		if (Count[i])
 			insert(queue, new Hnode((unsigned char)i, Count[i]));
+
+		
+	// NEED TO CHECK IF ONLY ONE LETTER
+	Hnode * root = new Hnode();
+	root->right = queue->data;
+	Node * temp = queue;
+	queue = queue->next;
+	delete temp;
 	
-	
-	//j++;
-	
-	// cout << j;
-	// cout << dict['t'];
+	while (queue) {
+		
+	}
 	return 0;
 }
