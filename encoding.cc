@@ -4,6 +4,19 @@
 #include "tree.h"
 using namespace std;
 
+void build_path(string & path, char c, Hnode * root) {
+	if (!root->left)
+		return;
+	else if (root->left->letter == c) {
+		path += '1';
+		//cout << endl <<c << " " << path <<endl;
+	}
+	else {
+		path += '0';
+		build_path(path, c, root->right);
+	}
+}
+
 void insert(Node * & queue, Hnode * huffnode) {
 	if (!queue) {
 		queue = new Node(huffnode);
@@ -32,40 +45,38 @@ void print_tree(Hnode * root, int indent) {
 }
 
 int main(int argc, char * argv[]) {
-	ifstream readFile;
-	readFile.open(argv[1]);
-	char output;
+	ifstream file(argv[1]);
+	char c;
 	
 	int Count[256];
-	for (int i=0; i<256; i++)
+	string Path[256];
+	for (int i=0; i<256; i++) {
 		Count[i] = 0;
-
-	//cout << "test |" << string(7, ' ') <<"|" <<endl;
-	
-	//int j=0;
-	while (!readFile.eof()) {
-		readFile.read(&output, 1);
-		Count[output]++;
+		Path[i] = "";
 	}
+	while (1) {
+		file.get(c);
+		if (not file)
+			break;
+		Count[(unsigned char) c]++;
+	}
+	file.close();
 	
 	Node * queue = NULL;
-	
+	string allChars = "";
 	for (int i=0; i<256; i++) 
-		if (Count[i])
+		if (Count[i]) {
+			allChars += (unsigned char) i;
 			insert(queue, new Hnode((unsigned char)i, Count[i]));
+		}
+	// STILL NEED TO CHECK IF ONLY ONE LETTER
 		
-	
-	// NEED TO CHECK IF ONLY ONE LETTER
-	Hnode * old_root = new Hnode();
-	old_root->right = queue->data;
-		
+	Hnode * old_root = queue->data;
 	Node * temp = queue;
 	queue = queue->next;
-
 	delete temp;
 		
 	Hnode * root = NULL;
-		
 	while (queue) {
 		root = new Hnode();
 		Hnode * leaf = queue->data;
@@ -77,8 +88,22 @@ int main(int argc, char * argv[]) {
 		old_root = root;
 	}
 	
-	print_tree(root, 2);
+	for (int i=0; i < allChars.size(); i++) 
+		build_path(Path[(unsigned char) allChars[i]], allChars[i], root);
 	
+	ifstream file2(argv[1]);
+	int byte_count = 0;
+	string bit_string = "";
+	string char_string = "";
+	
+	while (1) {
+		file2.get(c);
+		if (!file2)
+			break;
+		
+	}
+	
+	print_tree(root, 2);	
 	
 	return 0;
 }
