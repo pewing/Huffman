@@ -44,6 +44,11 @@ void print_tree(Hnode * root, int indent) {
 	}
 }
 
+char bit_to_char(string str) {
+	
+	
+}
+
 int main(int argc, char * argv[]) {
 	ifstream file(argv[1]);
 	char c;
@@ -100,7 +105,11 @@ int main(int argc, char * argv[]) {
 		file2.get(c);
 		if (!file2)
 			break;
-		
+		bit_string += Path[(unsigned char) c];
+		while (bit_string.size() >= 8) {
+			
+			
+		}
 	}
 	
 	print_tree(root, 2);	
