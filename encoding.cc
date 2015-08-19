@@ -108,7 +108,6 @@ int main(int argc, char * argv[]) {
 		bit_string += Path[(unsigned char) c];
 		while (bit_string.size() >= 8) {
 			
-			
 		}
 	}
 	
