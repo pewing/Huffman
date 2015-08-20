@@ -103,8 +103,11 @@ int main(int argc, char * argv[]) {
 	
 	while (1) {
 		file2.get(c);
-		if (!file2)
+		if (!file2) {
+			bit_string += string(8-bitstring.size(), '0');
+			// turn into last char
 			break;
+		}
 		bit_string += Path[(unsigned char) c];
 		while (bit_string.size() >= 8) {
 			
