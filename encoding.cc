@@ -45,7 +45,8 @@ void print_tree(Hnode * root, int indent) {
 }
 
 char bit_to_char(string str) {
-	
+	if (str.size() != 8)
+		return '';
 	
 }
 
