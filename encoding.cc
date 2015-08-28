@@ -9,7 +9,6 @@ void build_path(string & path, char c, Hnode * root) {
 		return;
 	else if (root->left->letter == c) {
 		path += '1';
-		//cout << endl <<c << " " << path <<endl;
 	}
 	else {
 		path += '0';
@@ -20,11 +19,9 @@ void build_path(string & path, char c, Hnode * root) {
 void insert(Node * & queue, Hnode * huffnode) {
 	if (!queue) {
 		queue = new Node(huffnode);
-		//cout << queue->data->letter << endl;
 	}
 	else if (huffnode->count <= queue->data->count) {
 		queue = new Node(huffnode, queue);
-		//cout << queue->data->letter << endl;
 	}
 	else
 		insert(queue->next, huffnode);
