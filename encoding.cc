@@ -104,11 +104,13 @@ int main(int argc, char * argv[]) {
 		if (!file2) {
 			bit_string += string(8-bitstring.size(), '0');
 			// turn into last char
+			char_string += byte_to_char(bit_string);
 			break;
 		}
 		bit_string += Path[(unsigned char) c];
 		while (bit_string.size() >= 8) {
-			
+			byte_to_char(bit_string.substr(0,8));
+			bit_string = bit_string(8);
 		}
 	}
 	
