@@ -44,7 +44,12 @@ void print_tree(Hnode * root, int indent) {
 char bit_to_char(string str) {
 	if (str.size() != 8)
 		return '';
-	
+	int temp = 0
+	if (str[0]=='1')
+		temp = 1;
+	for (int i=6; i>=0; i--) {
+		if str
+	}
 }
 
 int main(int argc, char * argv[]) {
