@@ -45,9 +45,11 @@ char bit_to_char(string str) {
 	if (str.size() != 8)
 		return '';
 	int temp = 0;
-	for (int i=7; i>=0; i--) 
+	for (int i=0; i<8; i++) {
 		if (str[i] == '1')
 			temp += pow(2, 7-i);
+		temp =<< 1;
+	}
 	return temp;
 }
 
