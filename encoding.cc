@@ -46,9 +46,9 @@ char bit_to_char(string str) {
 		return '';
 	int temp = 0;
 	for (int i=0; i<8; i++) {
+		temp = temp << 1;
 		if (str[i] == '1')
-			temp += pow(2, 7-i);
-		temp =<< 1;
+			temp++;
 	}
 	return temp;
 }
