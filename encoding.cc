@@ -41,9 +41,9 @@ void print_tree(Hnode * root, int indent) {
 	}
 }
 
-char bit_to_char(string str) {
-	if (str.size() != 8)
-		return '';
+char byte_to_char(string str) {
+	/*if (str.size() != 8)
+		return '';*/
 	int temp = 0;
 	for (int i=0; i<8; i++) {
 		temp = temp << 1;
@@ -53,7 +53,7 @@ char bit_to_char(string str) {
 	return temp;
 }
 
-int main(int argc, char * argv[]) {
+int main(int argc, char * argv[]) { 
 	ifstream file(argv[1]);
 	char c;
 	
@@ -108,7 +108,7 @@ int main(int argc, char * argv[]) {
 	while (1) {
 		file2.get(c);
 		if (!file2) {
-			bit_string += string(8-bitstring.size(), '0');
+			bit_string += string(8-bit_string.size(), '0');
 			// turn into last char
 			char_string += byte_to_char(bit_string);
 			break;
@@ -116,11 +116,13 @@ int main(int argc, char * argv[]) {
 		bit_string += Path[(unsigned char) c];
 		while (bit_string.size() >= 8) {
 			byte_to_char(bit_string.substr(0,8));
-			bit_string = bit_string(8);
+			bit_string = bit_string.substr(8);
 		}
-	}
+	} 
 	
-	print_tree(root, 2);	
+	cout << byte_to_char("00110100")<< endl;
+	
+	//print_tree(root, 2);	
 	
 	return 0;
 }
