@@ -4,15 +4,22 @@
 #include "tree.h"
 using namespace std;
 
-void build_path(string & path, char c, Hnode * root) {
-	if (!root->left)
+void build_path(string * path, Hnode * root, string bits) {
+	if (!root->left) {// reached a char
+		path[(unsigned char)root->letter] = bits;
 		return;
-	else if (root->left->letter == c) {
-		path += '1';
 	}
+	build_path(path, root->right, bits+"1");
+	build_path(path, root->left, bits+"0");
+}
+
+void tree_to_string(Hnode * root, string & tree_string) {
+	if (!root->left) 
+		tree_string = tree_string + "O" + root->letter;
 	else {
-		path += '0';
-		build_path(path, c, root->right);
+		tree_string = tree_string + "I";
+		tree_to_string(root->left, tree_string);
+		tree_to_string(root->right, tree_string);
 	}
 }
 
@@ -79,38 +86,30 @@ int main(int argc, char * argv[]) {
 			insert(queue, new Hnode((unsigned char)i, Count[i]));
 		}
 	
-/* 	Node * temporary = queue;
-	while (temporary) {
-		cout << temporary->data->letter;
-		temporary = temporary->next;
-	} */
-		
-	// STILL NEED TO CHECK IF ONLY ONE LETTER
-		
-	Hnode * old_root = queue->data;
-	Node * temp = queue;
-	queue = queue->next;
-	delete temp;
-		
-	Hnode * root = NULL;
-	while (queue) {
-		root = new Hnode();
-		Hnode * leaf = queue->data;
-		root->left = leaf;
-		root->right = old_root;
-		Node * temp = queue;
+	while (queue->next) { // Combine two nodes, insert them back into queue until queue->next = NULL
+		Hnode * parent = new Hnode();
+		parent->count = queue->data->count + queue->next->data->count;
+		parent->left = queue->data;
+		parent->right = queue->next->data;
+		Node * to_del = queue;
 		queue = queue->next;
-		delete temp;
-		old_root = root;
+		delete to_del;
+		to_del = queue;
+		queue = queue->next;
+		delete to_del;
+		insert(queue, parent);
 	}
 	
-	for (int i=0; i < allChars.size(); i++) 
-		build_path(Path[(unsigned char) allChars[i]], allChars[i], root);
+	Hnode * root = queue->data;
+	delete queue;
+	
+	build_path(Path, root, "");
+	
 	
 	ifstream file2(argv[1]);
 	int byte_count = 0;
 	string bit_string = "";
-	string char_string = "";
+	string char_string = ""; // Full string of char that describes path; Have to keep in variable since we're putting it in our encoded file last
 	
 	
 	while (1) {
@@ -130,15 +129,17 @@ int main(int argc, char * argv[]) {
 			byte_count++;
 		}
 	} 
+	file2.close();
 	
-	
+	string tree_string = "";
+	tree_to_string(root, tree_string);
+	cout << tree_string << endl;
 	
 	string output_file_name = argv[1];
 	ofstream output_file((output_file_name+".huf").c_str());
 	
-	//cout << byte_to_char("00111111")<< endl;
-	
-	//print_tree(root, 2);	
+	output_file << byte_count << tree_string << char_string;
+
 	
 	return 0;
 }
