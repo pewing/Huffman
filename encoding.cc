@@ -78,6 +78,13 @@ int main(int argc, char * argv[]) {
 			allChars += (unsigned char) i;
 			insert(queue, new Hnode((unsigned char)i, Count[i]));
 		}
+	
+/* 	Node * temporary = queue;
+	while (temporary) {
+		cout << temporary->data->letter;
+		temporary = temporary->next;
+	} */
+		
 	// STILL NEED TO CHECK IF ONLY ONE LETTER
 		
 	Hnode * old_root = queue->data;
@@ -105,22 +112,31 @@ int main(int argc, char * argv[]) {
 	string bit_string = "";
 	string char_string = "";
 	
+	
 	while (1) {
 		file2.get(c);
 		if (!file2) {
-			bit_string += string(8-bit_string.size(), '0');
-			// turn into last char
-			char_string += byte_to_char(bit_string);
+			if (bit_string != "") {
+				bit_string += string(8-bit_string.size(), '0'); // turn into last char
+				char_string += byte_to_char(bit_string);
+				byte_count++;
+				}
 			break;
 		}
 		bit_string += Path[(unsigned char) c];
 		while (bit_string.size() >= 8) {
-			byte_to_char(bit_string.substr(0,8));
+			char_string += byte_to_char(bit_string.substr(0,8));
 			bit_string = bit_string.substr(8);
+			byte_count++;
 		}
 	} 
 	
-	cout << byte_to_char("00110100")<< endl;
+	
+	
+	string output_file_name = argv[1];
+	ofstream output_file((output_file_name+".huf").c_str());
+	
+	//cout << byte_to_char("00111111")<< endl;
 	
 	//print_tree(root, 2);	
 	
