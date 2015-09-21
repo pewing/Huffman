@@ -61,7 +61,9 @@ char byte_to_char(string str) {
 }
 
 int main(int argc, char * argv[]) { 
-	ifstream file(argv[1]);
+	string file_name = argv[1];	
+	ifstream file(file_name.c_str());
+	int char_count = 0;
 	char c;
 	
 	int Count[256];
@@ -74,9 +76,16 @@ int main(int argc, char * argv[]) {
 		file.get(c);
 		if (not file)
 			break;
+		char_count++;
 		Count[(unsigned char) c]++;
 	}
 	file.close();
+	
+	if (!char_count) {
+		ofstream output_file((file_name+".huf").c_str());
+		return 0;
+	}
+	
 	
 	Node * queue = NULL;
 	string allChars = "";
@@ -85,7 +94,7 @@ int main(int argc, char * argv[]) {
 			allChars += (unsigned char) i;
 			insert(queue, new Hnode((unsigned char)i, Count[i]));
 		}
-	
+		
 	while (queue->next) { // Combine two nodes, insert them back into queue until queue->next = NULL
 		Hnode * parent = new Hnode();
 		parent->count = queue->data->count + queue->next->data->count;
@@ -100,14 +109,16 @@ int main(int argc, char * argv[]) {
 		insert(queue, parent);
 	}
 	
+	
 	Hnode * root = queue->data;
 	delete queue;
 	
 	build_path(Path, root, "");
 	
 	
-	ifstream file2(argv[1]);
-	int byte_count = 0;
+	ifstream file2(file_name.c_str());
+	//int byte_count = 0;
+	
 	string bit_string = "";
 	string char_string = ""; // Full string of char that describes path; Have to keep in variable since we're putting it in our encoded file last
 	
@@ -118,7 +129,7 @@ int main(int argc, char * argv[]) {
 			if (bit_string != "") {
 				bit_string += string(8-bit_string.size(), '0'); // turn into last char
 				char_string += byte_to_char(bit_string);
-				byte_count++;
+				//byte_count++;
 				}
 			break;
 		}
@@ -126,20 +137,23 @@ int main(int argc, char * argv[]) {
 		while (bit_string.size() >= 8) {
 			char_string += byte_to_char(bit_string.substr(0,8));
 			bit_string = bit_string.substr(8);
-			byte_count++;
+			//byte_count++;
 		}
 	} 
 	file2.close();
 	
 	string tree_string = "";
 	tree_to_string(root, tree_string);
-	cout << tree_string << endl;
+	//cout << tree_string << endl;
 	
 	string output_file_name = argv[1];
-	ofstream output_file((output_file_name+".huf").c_str());
+	ofstream output_file((file_name+".huf").c_str());
 	
-	output_file << byte_count << tree_string << char_string;
+	output_file << char_count << tree_string << char_string;
 
+	output_file.close();
+	
+	// Next thing to do: don't keep char_string in a var. Store in a file, then open that and concat into final file
 	
 	return 0;
 }
