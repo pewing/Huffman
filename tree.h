@@ -1,13 +1,11 @@
 // tree.h
 
-
-
 struct Hnode {
 	Hnode* left;
 	Hnode* right;
 	char letter;
 	int count;
-	
+
 	Hnode(char c, int cnt) {
 		letter = c;
 		count = cnt;
