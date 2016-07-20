@@ -144,7 +144,7 @@ int main(int argc, char * argv[]) {
 
 	iFile.seekg(0, iFile.beg);
 	ofstream oFile;
-	oFile.open("output_" + filename);
+	oFile.open("output_" + filename + ".huf");
 
 	traverseTreeForGraph(top, oFile);
 
