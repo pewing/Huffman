@@ -9,6 +9,40 @@
 
 using namespace std;
 
+void createHnodeTree(Hnode * & top, string path, int & index) {
+	cout << "index = " << index << endl;
+	if (!top) {
+		return;
+	}
+	Hnode * child = new Hnode();
+	if (path[index] == 'C') {
+		top->letter = path[++index];
+		cout << top->letter << endl;
+		index++;
+		return;
+	}
+	else if (path[index] == 'L') {
+		top->left = new Hnode();
+		createHnodeTree(top->left, path, ++index);
+		if (path[index] != 'R') {
+			cout << "ERROR - unproperly formatted graph" << endl;
+			return;
+		}
+		top->right = new Hnode();
+		createHnodeTree(top->right, path, ++index);
+		return;
+	}
+	else {
+		cout << "ERROR - unproperly formatted graph" << endl;
+		return;
+	}
+}
+
+void createHnodeTreeTop(Hnode * & top, string path) {
+	int index = 0;
+	createHnodeTree(top, path, index);
+}
+
 int main(int argc, char * argv[]) {
 	if (argc != 2 ) {
 		cout << "ERROR - Proper syntax:  decoder.exe filename.huf"<<endl;
@@ -35,7 +69,7 @@ int main(int argc, char * argv[]) {
 	int r = 0;
 	int c = 0;
 	bool doneTreePath = false;
-	Hnode * top = NULL;
+	Hnode * top = new Hnode();
 
 	while (iFile.get(ch)) {
 		if (!doneTreePath) {
@@ -52,23 +86,21 @@ int main(int argc, char * argv[]) {
 					iFile.get(ch);
 					break;
 				default:
-					cout << "ERROR - Graph not properly formatted";
+					cout << "ERROR - Graph not properly formatted" << endl;;
 					cout<< l<<r<<c;
 					return 0;
 			}
 			treePath += ch;
 			if (l == r && c == l+1) {
 					doneTreePath = true;
-					cout << treePath;
+					createHnodeTreeTop(top, treePath);
 			}
 		}
+		// now dealing with bitstring path
 		else {
 
 		}
 	}
-
-
-	// bool postC;
 
 
 
