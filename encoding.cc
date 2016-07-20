@@ -113,7 +113,7 @@ int main(int argc, char * argv[]) {
 		filename = argv[1];
 	}
 	else {
-		cout << "Wrong number of arguments. " << endl;
+		cout << "ERROR - Wrong number of arguments. " << endl;
 		return 0;
 	}
 
@@ -123,7 +123,7 @@ int main(int argc, char * argv[]) {
 	ifstream iFile(filename);
 
 	if (!iFile.is_open()) {
-		cout << "Unable to open file" << endl;
+		cout << "ERROR - Unable to open file" << endl;
 		return 0;
 	}
 
