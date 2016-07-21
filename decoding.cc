@@ -43,6 +43,22 @@ void createHnodeTreeTop(Hnode * & top, string path) {
 	createHnodeTree(top, path, index);
 }
 
+string charToBits(char c) {
+	int num = int(c);
+	string byteString = "";
+
+	for (int i = 1; i <= 128; i = i * 2) {
+		if ( num & i) {
+			byteString = "1" + byteString;
+		}
+		else {
+			byteString = "0" + byteString;
+		}
+	}
+
+	return byteString;
+}
+
 int main(int argc, char * argv[]) {
 	if (argc != 2 ) {
 		cout << "ERROR - Proper syntax:  decoder.exe filename.huf"<<endl;
@@ -70,6 +86,7 @@ int main(int argc, char * argv[]) {
 	int c = 0;
 	bool doneTreePath = false;
 	Hnode * top = new Hnode();
+	string bitPath = "";
 
 	while (iFile.get(ch)) {
 		if (!doneTreePath) {
@@ -98,11 +115,13 @@ int main(int argc, char * argv[]) {
 		}
 		// now dealing with bitstring path
 		else {
+				// bitPath += charToBits(ch);
 
 		}
 	}
-
-
+	cout << charToBits('0') << endl;
+	cout << charToBits('\n') << endl;
+	cout << charToBits('	') << endl;
 
 	return 0;
 }
