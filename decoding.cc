@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+// #include <vector>
 #include "tree.h"
 
 using namespace std;
@@ -59,6 +60,58 @@ string charToBits(char c) {
 	return byteString;
 }
 
+
+void binaryTreeToArray(Hnode * top, string * bitPath, string currentPath) {
+	if (!top->left) {
+		bitPath[top->letter] = currentPath;
+		return;
+	}
+	binaryTreeToArray(top->left, bitPath, currentPath + "0");
+	binaryTreeToArray(top->right, bitPath, currentPath + "1");
+}
+
+
+void readAndMakeBinaryTree(ifstream & iFile, string * bitPath) {
+	string treePath = "";
+	char ch;
+	int l = 0;
+	int r = 0;
+	int c = 0;
+	bool doneTreePath = false;
+	Hnode * top = new Hnode();
+
+	while (iFile.get(ch) && !doneTreePath) {
+		switch (ch) {
+			case 'L':
+				l++;
+				break;
+			case 'R':
+				r++;
+				break;
+			case 'C':
+				c++;
+				treePath += ch;
+				iFile.get(ch);
+				break;
+			default:
+				cout << "ERROR - Graph not properly formatted" << endl;;
+				cout<< l<<r<<c;
+				return;
+		}
+		treePath += ch;
+		if (l == r && c == l+1) {
+				doneTreePath = true;
+				createHnodeTreeTop(top, treePath);
+		}
+	}
+	binaryTreeToArray(top, bitPath, "");
+
+	for (int i = 0; i < 256; i++) {
+		cout << char(i) << " - " << bitPath <<endl;
+	}
+}
+
+
 int main(int argc, char * argv[]) {
 	if (argc != 2 ) {
 		cout << "ERROR - Proper syntax:  decoder.exe filename.huf"<<endl;
@@ -72,56 +125,18 @@ int main(int argc, char * argv[]) {
 	}
 
 	ifstream iFile(filename);
-	ofstream oFole(filename.substr(0, filenameSize - 4) + ".txt");
+	ofstream oFile(filename.substr(0, filenameSize - 4) + ".txt");
 
 	if (!iFile.is_open()) {
 		cout << "ERROR - Unable to open file" << endl;
 		return 0;
 	}
 
-	string treePath = "";
-	char ch;
-	int l = 0;
-	int r = 0;
-	int c = 0;
-	bool doneTreePath = false;
-	Hnode * top = new Hnode();
-	string bitPath = "";
+	string bitPath[256] = {""};
 
-	while (iFile.get(ch)) {
-		if (!doneTreePath) {
-			switch (ch) {
-				case 'L':
-					l++;
-					break;
-				case 'R':
-					r++;
-					break;
-				case 'C':
-					c++;
-					treePath += ch;
-					iFile.get(ch);
-					break;
-				default:
-					cout << "ERROR - Graph not properly formatted" << endl;;
-					cout<< l<<r<<c;
-					return 0;
-			}
-			treePath += ch;
-			if (l == r && c == l+1) {
-					doneTreePath = true;
-					createHnodeTreeTop(top, treePath);
-			}
-		}
-		// now dealing with bitstring path
-		else {
-				// bitPath += charToBits(ch);
+	readAndMakeBinaryTree(iFile, bitPath);
 
-		}
-	}
-	cout << charToBits('0') << endl;
-	cout << charToBits('\n') << endl;
-	cout << charToBits('	') << endl;
+
 
 	return 0;
 }
