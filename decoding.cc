@@ -64,10 +64,13 @@ string charToBits(char c) {
 void binaryTreeToArray(Hnode * top, string * bitPath, string currentPath) {
 	if (!top->left) {
 		bitPath[top->letter] = currentPath;
-		return;
+		// return;
 	}
-	binaryTreeToArray(top->left, bitPath, currentPath + "0");
-	binaryTreeToArray(top->right, bitPath, currentPath + "1");
+	else {
+		binaryTreeToArray(top->left, bitPath, currentPath + "0");
+		binaryTreeToArray(top->right, bitPath, currentPath + "1");
+	}
+	delete top;
 }
 
 
