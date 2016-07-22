@@ -61,20 +61,28 @@ string charToBits(char c) {
 }
 
 
-void binaryTreeToArray(Hnode * top, string * bitPath, string currentPath) {
-	if (!top->left) {
-		bitPath[top->letter] = currentPath;
-		// return;
+bool findLetter(Hnode * currentNode, string & bitPath, unsigned char & letter) {
+	if (!currentNode) {
+		return false;
+	}
+	else if (!currentNode->left) {
+		letter = (unsigned char)currentNode->letter;
+		return true;
+	}
+	else if (bitPath == "") {
+		return false;
+	}
+	string newBitPath = bitPath.substr(1);
+	if (bitPath[0] == '0') {
+		return findLetter(currentNode->left, newBitPath, letter);
 	}
 	else {
-		binaryTreeToArray(top->left, bitPath, currentPath + "0");
-		binaryTreeToArray(top->right, bitPath, currentPath + "1");
+		return findLetter(currentNode->right, newBitPath, letter);
 	}
-	delete top;
 }
 
 
-void readAndMakeBinaryTree(ifstream & iFile, string * bitPath) {
+Hnode * readAndMakeBinaryTree(ifstream & iFile) {
 	string treePath = "";
 	char ch;
 	int l = 0;
@@ -99,7 +107,7 @@ void readAndMakeBinaryTree(ifstream & iFile, string * bitPath) {
 			default:
 				cout << "ERROR - Graph not properly formatted" << endl;;
 				cout<< l<<r<<c;
-				return;
+				return NULL;
 		}
 		treePath += ch;
 		if (l == r && c == l+1) {
@@ -107,13 +115,28 @@ void readAndMakeBinaryTree(ifstream & iFile, string * bitPath) {
 				createHnodeTreeTop(top, treePath);
 		}
 	}
-	binaryTreeToArray(top, bitPath, "");
-
-	for (int i = 0; i < 256; i++) {
-		cout << char(i) << " - " << bitPath <<endl;
-	}
+	return top;
 }
 
+void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile) {
+	Hnode * currentNode = top;
+
+	char ch;
+	unsigned char letter;
+
+	string bitPath = "";
+	while (iFile.get(ch)) {
+		bitPath += charToBits(ch);
+		cout << (int)(unsigned char)ch << endl;
+		cout << bitPath << endl;
+		while (findLetter(currentNode, bitPath, letter)) {
+			oFile << letter;
+			// cout << "letter = " << letter << endl;
+			currentNode = top;
+			// cout << "in while find letter loop"<<endl;
+		}
+	}
+}
 
 int main(int argc, char * argv[]) {
 	if (argc != 2 ) {
@@ -135,10 +158,9 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	string bitPath[256] = {""};
+	Hnode * top = readAndMakeBinaryTree(iFile);
 
-	readAndMakeBinaryTree(iFile, bitPath);
-
+	traversePathAndPrintToFile(iFile, top, oFile);
 
 
 	return 0;
