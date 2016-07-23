@@ -72,36 +72,46 @@ void traverseTreeForBytePath(Hnode * top, string * byteIndex, string bitPath) {
 }
 
 
-void traverseTreeForGraph(Hnode * top, ostream & oFile) {
+void traverseTreeForGraph(Hnode * top, string & graph) {
 	if (!top) {
 		return;
 	}
 	if (top->left) {
-		oFile << "L";
-		traverseTreeForGraph(top->left, oFile);
-		oFile << "R";
-		traverseTreeForGraph(top->right, oFile);
+		graph += "L";
+		traverseTreeForGraph(top->left, graph);
+		graph += "R";
+		traverseTreeForGraph(top->right, graph);
 		return;
 	}
 	// Otherwise reached a char
-	oFile << "C" << top->letter;
+	graph += "C";
+	graph += top->letter;
 }
 
-char byteToChar(string str) {
+
+void callTraverseTreeForGraphAndPrint(Hnode * top, ofstream & oFile) {
+	string fullTree = "";
+	traverseTreeForGraph(top, fullTree);
+	oFile.write(fullTree.c_str(), fullTree.size());
+}
+
+
+string byteToChar(string str) {
 	if (str.size() != 8) {
 		cout << "Problem with size";
-		return '0';
+		return "0";
 	}
 
-	int num = 0;
+	unsigned char num = 0;
 	for (int i = 0; i < 8; i++) {
 		num *= 2;
 		if (str[i] == '1') {
 			num += 1;
 		}
 	}
-	return (char)num;
+	return string(reinterpret_cast<const char *>(num));
 }
+
 
 int main(int argc, char * argv[]) {
 	string filename;
@@ -131,6 +141,7 @@ int main(int argc, char * argv[]) {
 		charCount[(unsigned char)c]++;
 		byteCount++;
 	}
+
 	iFile.clear();
 
 	string charTracker = ""; //Every different char in file
@@ -144,21 +155,32 @@ int main(int argc, char * argv[]) {
 
 	iFile.seekg(0, iFile.beg);
 	ofstream oFile;
-	oFile.open("output_" + filename + ".huf");
+	oFile.open("output_" + filename + ".huf", ios::out | ios::binary);
 
-	traverseTreeForGraph(top, oFile);
+	callTraverseTreeForGraphAndPrint(top, oFile);
 
 	string currentByte = "";
 	while (iFile.get(c)) {
+		cout << "c = " << (int)c <<endl;
 		currentByte += bytePath[(int)c];
+		cout << "path = " << bytePath[(int)c] << endl;
+		cout << "byte = " << currentByte << endl<<endl;
 		while (currentByte.size() >= 8) {
-			oFile << byteToChar(currentByte.substr(0,8));
+			// oFile << "hi";
+			cout << "1" << endl;
+			// const char * byte = byteToChar(currentByte.substr(0,8));
+			cout << "2" << endl;
+			// Writing one bytw at a time is inefficient. Needs work
+			// oFile.write(byteToChar(currentByte.substr(0,8)), 1);
+			cout << "3" << endl;
+			// cout << "----" <<byteToChar(curresntByte.substr(0,8))<<"-----"<<endl;
+			// cout << "----" <<(int)byteToChar(currentByte.substr(0,8))<<"-----"<<endl;
 			currentByte = currentByte.substr(8);
 		}
 	}
 	if (currentByte.size() != 0) {
 		currentByte += string(8 - currentByte.size(), '0');
-		oFile << byteToChar(currentByte.substr(0,8));
+		// oFile.write((const char *)byteToChar(currentByte.substr(0,8)), 1);
 	}
 
 	iFile.close();

@@ -136,6 +136,8 @@ void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile)
 			// cout << "in while find letter loop"<<endl;
 		}
 	}
+	iFile.close();
+	oFile.close();
 }
 
 int main(int argc, char * argv[]) {
@@ -150,7 +152,7 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	ifstream iFile(filename);
+	ifstream iFile(filename, ios::binary);
 	ofstream oFile(filename.substr(0, filenameSize - 4) + ".txt");
 
 	if (!iFile.is_open()) {
