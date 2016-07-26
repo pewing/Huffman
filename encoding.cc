@@ -102,14 +102,17 @@ string byteToChar(string str) {
 		return "0";
 	}
 
-	unsigned char num = 0;
+	int num = 0;
 	for (int i = 0; i < 8; i++) {
 		num *= 2;
 		if (str[i] == '1') {
 			num += 1;
 		}
 	}
-	return string(reinterpret_cast<const char *>(num));
+	// cout << "MADE IT THIS FAR |" << num << "|" << endl;
+	// string temp = string(reinterpret_cast<const char *>(num));
+	// cout << "BEFORE RETURN"<<endl;
+	return string(1, (unsigned char) num);
 }
 
 
@@ -166,12 +169,11 @@ int main(int argc, char * argv[]) {
 		cout << "path = " << bytePath[(int)c] << endl;
 		cout << "byte = " << currentByte << endl<<endl;
 		while (currentByte.size() >= 8) {
-			// oFile << "hi";
 			cout << "1" << endl;
-			// const char * byte = byteToChar(currentByte.substr(0,8));
-			cout << "2" << endl;
+			// const char * byte = byteToChar(currentByte.substr(0,8)).c_str();
+			cout << "2 - " <<currentByte.substr(0,8) << endl;
 			// Writing one bytw at a time is inefficient. Needs work
-			// oFile.write(byteToChar(currentByte.substr(0,8)), 1);
+			oFile.write(byteToChar(currentByte.substr(0,8)).c_str(), 1);
 			cout << "3" << endl;
 			// cout << "----" <<byteToChar(curresntByte.substr(0,8))<<"-----"<<endl;
 			// cout << "----" <<(int)byteToChar(currentByte.substr(0,8))<<"-----"<<endl;
