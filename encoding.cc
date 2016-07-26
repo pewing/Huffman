@@ -109,9 +109,6 @@ string byteToChar(string str) {
 			num += 1;
 		}
 	}
-	// cout << "MADE IT THIS FAR |" << num << "|" << endl;
-	// string temp = string(reinterpret_cast<const char *>(num));
-	// cout << "BEFORE RETURN"<<endl;
 	return string(1, (unsigned char) num);
 }
 
@@ -164,25 +161,16 @@ int main(int argc, char * argv[]) {
 
 	string currentByte = "";
 	while (iFile.get(c)) {
-		cout << "c = " << (int)c <<endl;
 		currentByte += bytePath[(int)c];
-		cout << "path = " << bytePath[(int)c] << endl;
-		cout << "byte = " << currentByte << endl<<endl;
 		while (currentByte.size() >= 8) {
-			cout << "1" << endl;
-			// const char * byte = byteToChar(currentByte.substr(0,8)).c_str();
-			cout << "2 - " <<currentByte.substr(0,8) << endl;
 			// Writing one bytw at a time is inefficient. Needs work
 			oFile.write(byteToChar(currentByte.substr(0,8)).c_str(), 1);
-			cout << "3" << endl;
-			// cout << "----" <<byteToChar(curresntByte.substr(0,8))<<"-----"<<endl;
-			// cout << "----" <<(int)byteToChar(currentByte.substr(0,8))<<"-----"<<endl;
 			currentByte = currentByte.substr(8);
 		}
 	}
 	if (currentByte.size() != 0) {
 		currentByte += string(8 - currentByte.size(), '0');
-		// oFile.write((const char *)byteToChar(currentByte.substr(0,8)), 1);
+		oFile.write(byteToChar(currentByte.substr(0,8)).c_str(), 1);
 	}
 
 	iFile.close();
