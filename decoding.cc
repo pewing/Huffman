@@ -62,30 +62,35 @@ string charToBits(char c) {
 
 
 bool findLetter(Hnode * currentNode, string & bitPath, unsigned char & letter) {
-	// cout << "bitPath is " << bitPath << endl;
 	if (!currentNode) {
-		// cout << "returned false" << endl;
 		return false;
 	}
 	else if (!currentNode->left) {
 		letter = (unsigned char)currentNode->letter;
-		cout << "BITPATH LEFT: " << bitPath << endl;
 		return true;
 	}
 	else if (bitPath == "") {
 		cout << "RETURNING FALSE" <<endl;
 		return false;
 	}
-
+	string newBitPath = bitPath.substr(1);
 	if (bitPath[0] == '0') {
-		// cout << "going left"<<endl;
-		bitPath = bitPath.substr(1);
-		return findLetter(currentNode->left, bitPath, letter);
+		if (findLetter(currentNode->left, newBitPath, letter)) {
+			bitPath = newBitPath;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 	else {
-		// cout << "going right"<<endl;
-		bitPath = bitPath.substr(1);
-		return findLetter(currentNode->right, bitPath, letter);
+		if (findLetter(currentNode->right, newBitPath, letter)) {
+			bitPath = newBitPath;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 
@@ -98,7 +103,6 @@ void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile)
 
 	string bitPath = "";
 	while (iFile.get(ch)) {
-		cout << "before bitPath = " << bitPath << endl;
 		bitPath += charToBits(ch);
 		cout << (int)(unsigned char)ch << endl;
 		cout << "after bitPath = " << bitPath << endl;
