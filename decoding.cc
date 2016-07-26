@@ -11,14 +11,14 @@
 using namespace std;
 
 void createHnodeTree(Hnode * & top, string path, int & index) {
-	cout << "index = " << index << endl;
+	// cout << "index = " << index << endl;
 	if (!top) {
 		return;
 	}
 	Hnode * child = new Hnode();
 	if (path[index] == 'C') {
 		top->letter = path[++index];
-		cout << top->letter << endl;
+		cout <<"__"<< top->letter << endl;
 		index++;
 		return;
 	}
@@ -62,23 +62,57 @@ string charToBits(char c) {
 
 
 bool findLetter(Hnode * currentNode, string & bitPath, unsigned char & letter) {
+	// cout << "bitPath is " << bitPath << endl;
 	if (!currentNode) {
+		// cout << "returned false" << endl;
 		return false;
 	}
 	else if (!currentNode->left) {
 		letter = (unsigned char)currentNode->letter;
+		cout << "BITPATH LEFT: " << bitPath << endl;
 		return true;
 	}
 	else if (bitPath == "") {
+		cout << "RETURNING FALSE" <<endl;
 		return false;
 	}
-	string newBitPath = bitPath.substr(1);
+
 	if (bitPath[0] == '0') {
-		return findLetter(currentNode->left, newBitPath, letter);
+		// cout << "going left"<<endl;
+		bitPath = bitPath.substr(1);
+		return findLetter(currentNode->left, bitPath, letter);
 	}
 	else {
-		return findLetter(currentNode->right, newBitPath, letter);
+		// cout << "going right"<<endl;
+		bitPath = bitPath.substr(1);
+		return findLetter(currentNode->right, bitPath, letter);
 	}
+}
+
+
+void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile) {
+	Hnode * currentNode = top;
+
+	char ch;
+	unsigned char letter;
+
+	string bitPath = "";
+	while (iFile.get(ch)) {
+		cout << "before bitPath = " << bitPath << endl;
+		bitPath += charToBits(ch);
+		cout << (int)(unsigned char)ch << endl;
+		cout << "after bitPath = " << bitPath << endl;
+		while (findLetter(currentNode, bitPath, letter)) {
+			oFile << letter;
+			cout << "letter = " << letter << endl;
+
+			currentNode = top;
+			cout << "bitPath : " << bitPath << endl;
+			// cout << "in while find letter loop"<<endl;
+		}
+	}
+	iFile.close();
+	oFile.close();
 }
 
 
@@ -91,7 +125,9 @@ Hnode * readAndMakeBinaryTree(ifstream & iFile) {
 	bool doneTreePath = false;
 	Hnode * top = new Hnode();
 
-	while (iFile.get(ch) && !doneTreePath) {
+	while (!doneTreePath) {
+		iFile.get(ch);
+		// cout << "-------" << (int)(unsigned char) ch << endl;
 		switch (ch) {
 			case 'L':
 				l++;
@@ -103,42 +139,25 @@ Hnode * readAndMakeBinaryTree(ifstream & iFile) {
 				c++;
 				treePath += ch;
 				iFile.get(ch);
+				if (l == r && c == l+1) {
+					doneTreePath = true;
+				}
+				// else {
+				// 	iFile.get(ch);
+				// }
 				break;
 			default:
 				cout << "ERROR - Graph not properly formatted" << endl;;
-				cout<< l<<r<<c;
 				return NULL;
 		}
 		treePath += ch;
-		if (l == r && c == l+1) {
-				doneTreePath = true;
-				createHnodeTreeTop(top, treePath);
-		}
 	}
+	// treePath += ch;
+	cout << "tree path = " << treePath <<endl;
+	createHnodeTreeTop(top, treePath);
 	return top;
 }
 
-void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile) {
-	Hnode * currentNode = top;
-
-	char ch;
-	unsigned char letter;
-
-	string bitPath = "";
-	while (iFile.get(ch)) {
-		bitPath += charToBits(ch);
-		cout << (int)(unsigned char)ch << endl;
-		cout << bitPath << endl;
-		while (findLetter(currentNode, bitPath, letter)) {
-			oFile << letter;
-			// cout << "letter = " << letter << endl;
-			currentNode = top;
-			// cout << "in while find letter loop"<<endl;
-		}
-	}
-	iFile.close();
-	oFile.close();
-}
 
 int main(int argc, char * argv[]) {
 	if (argc != 2 ) {
@@ -152,7 +171,7 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	ifstream iFile(filename, ios::binary);
+	ifstream iFile(filename, ios::in | ios::binary);
 	ofstream oFile(filename.substr(0, filenameSize - 4) + ".txt");
 
 	if (!iFile.is_open()) {
