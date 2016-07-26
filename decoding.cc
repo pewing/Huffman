@@ -10,14 +10,12 @@
 using namespace std;
 
 void createHnodeTree(Hnode * & top, string path, int & index) {
-	cout << "index = " << index << endl;
 	if (!top) {
 		return;
 	}
 	Hnode * child = new Hnode();
 	if (path[index] == 'C') {
 		top->letter = path[++index];
-		cout << top->letter << endl;
 		index++;
 		return;
 	}
@@ -43,6 +41,113 @@ void createHnodeTreeTop(Hnode * & top, string path) {
 	createHnodeTree(top, path, index);
 }
 
+string charToBits(char c) {
+	int num = int(c);
+	string byteString = "";
+
+	for (int i = 1; i <= 128; i = i * 2) {
+		if ( num & i) {
+			byteString = "1" + byteString;
+		}
+		else {
+			byteString = "0" + byteString;
+		}
+	}
+
+	return byteString;
+}
+
+
+bool findLetter(Hnode * currentNode, string & bitPath, unsigned char & letter) {
+	if (!currentNode) {
+		return false;
+	}
+	else if (!currentNode->left) {
+		letter = (unsigned char)currentNode->letter;
+		return true;
+	}
+	else if (bitPath == "") {
+		return false;
+	}
+	string newBitPath = bitPath.substr(1);
+	if (bitPath[0] == '0') {
+		if (findLetter(currentNode->left, newBitPath, letter)) {
+			bitPath = newBitPath;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		if (findLetter(currentNode->right, newBitPath, letter)) {
+			bitPath = newBitPath;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+
+
+void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile) {
+	Hnode * currentNode = top;
+	char ch;
+	unsigned char letter;
+	string bitPath = "";
+
+	while (iFile.get(ch)) {
+		bitPath += charToBits(ch);
+
+		while (findLetter(currentNode, bitPath, letter)) {
+			oFile << letter;
+			currentNode = top;
+		}
+	}
+	iFile.close();
+	oFile.close();
+}
+
+
+Hnode * readAndMakeBinaryTree(ifstream & iFile) {
+	string treePath = "";
+	char ch;
+	int l = 0;
+	int r = 0;
+	int c = 0;
+	bool doneTreePath = false;
+	Hnode * top = new Hnode();
+
+	while (!doneTreePath) {
+		iFile.get(ch);
+		switch (ch) {
+			case 'L':
+				l++;
+				break;
+			case 'R':
+				r++;
+				break;
+			case 'C':
+				c++;
+				treePath += ch;
+				iFile.get(ch);
+				if (l == r && c == l+1) {
+					doneTreePath = true;
+				}
+				break;
+			default:
+				cout << "ERROR - Graph not properly formatted" << endl;;
+				return NULL;
+		}
+		treePath += ch;
+	}
+
+	createHnodeTreeTop(top, treePath);
+	return top;
+}
+
+
 int main(int argc, char * argv[]) {
 	if (argc != 2 ) {
 		cout << "ERROR - Proper syntax:  decoder.exe filename.huf"<<endl;
@@ -55,54 +160,17 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 
-	ifstream iFile(filename);
-	ofstream oFole(filename.substr(0, filenameSize - 4) + ".txt");
+	ifstream iFile(filename, ios::in | ios::binary);
+	ofstream oFile(filename.substr(0, filenameSize - 4) + ".txt");
 
 	if (!iFile.is_open()) {
 		cout << "ERROR - Unable to open file" << endl;
 		return 0;
 	}
 
-	string treePath = "";
-	char ch;
-	int l = 0;
-	int r = 0;
-	int c = 0;
-	bool doneTreePath = false;
-	Hnode * top = new Hnode();
+	Hnode * top = readAndMakeBinaryTree(iFile);
 
-	while (iFile.get(ch)) {
-		if (!doneTreePath) {
-			switch (ch) {
-				case 'L':
-					l++;
-					break;
-				case 'R':
-					r++;
-					break;
-				case 'C':
-					c++;
-					treePath += ch;
-					iFile.get(ch);
-					break;
-				default:
-					cout << "ERROR - Graph not properly formatted" << endl;;
-					cout<< l<<r<<c;
-					return 0;
-			}
-			treePath += ch;
-			if (l == r && c == l+1) {
-					doneTreePath = true;
-					createHnodeTreeTop(top, treePath);
-			}
-		}
-		// now dealing with bitstring path
-		else {
-
-		}
-	}
-
-
+	traversePathAndPrintToFile(iFile, top, oFile);
 
 	return 0;
 }
