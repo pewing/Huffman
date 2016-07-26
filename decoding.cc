@@ -5,20 +5,17 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-// #include <vector>
 #include "tree.h"
 
 using namespace std;
 
 void createHnodeTree(Hnode * & top, string path, int & index) {
-	// cout << "index = " << index << endl;
 	if (!top) {
 		return;
 	}
 	Hnode * child = new Hnode();
 	if (path[index] == 'C') {
 		top->letter = path[++index];
-		cout <<"__"<< top->letter << endl;
 		index++;
 		return;
 	}
@@ -70,7 +67,6 @@ bool findLetter(Hnode * currentNode, string & bitPath, unsigned char & letter) {
 		return true;
 	}
 	else if (bitPath == "") {
-		cout << "RETURNING FALSE" <<endl;
 		return false;
 	}
 	string newBitPath = bitPath.substr(1);
@@ -97,22 +93,16 @@ bool findLetter(Hnode * currentNode, string & bitPath, unsigned char & letter) {
 
 void traversePathAndPrintToFile(ifstream & iFile, Hnode * top, ofstream & oFile) {
 	Hnode * currentNode = top;
-
 	char ch;
 	unsigned char letter;
-
 	string bitPath = "";
+
 	while (iFile.get(ch)) {
 		bitPath += charToBits(ch);
-		cout << (int)(unsigned char)ch << endl;
-		cout << "after bitPath = " << bitPath << endl;
+
 		while (findLetter(currentNode, bitPath, letter)) {
 			oFile << letter;
-			cout << "letter = " << letter << endl;
-
 			currentNode = top;
-			cout << "bitPath : " << bitPath << endl;
-			// cout << "in while find letter loop"<<endl;
 		}
 	}
 	iFile.close();
@@ -131,7 +121,6 @@ Hnode * readAndMakeBinaryTree(ifstream & iFile) {
 
 	while (!doneTreePath) {
 		iFile.get(ch);
-		// cout << "-------" << (int)(unsigned char) ch << endl;
 		switch (ch) {
 			case 'L':
 				l++;
@@ -146,9 +135,6 @@ Hnode * readAndMakeBinaryTree(ifstream & iFile) {
 				if (l == r && c == l+1) {
 					doneTreePath = true;
 				}
-				// else {
-				// 	iFile.get(ch);
-				// }
 				break;
 			default:
 				cout << "ERROR - Graph not properly formatted" << endl;;
@@ -156,8 +142,7 @@ Hnode * readAndMakeBinaryTree(ifstream & iFile) {
 		}
 		treePath += ch;
 	}
-	// treePath += ch;
-	cout << "tree path = " << treePath <<endl;
+
 	createHnodeTreeTop(top, treePath);
 	return top;
 }
@@ -186,7 +171,6 @@ int main(int argc, char * argv[]) {
 	Hnode * top = readAndMakeBinaryTree(iFile);
 
 	traversePathAndPrintToFile(iFile, top, oFile);
-
 
 	return 0;
 }
